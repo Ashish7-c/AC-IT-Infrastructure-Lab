@@ -3,118 +3,104 @@
 
 # AC-IT Infrastructure & Reliability Lab
 
-### Enterprise Windows Infrastructure | Security Hardening | Backup & Disaster Recovery
+### Windows Server Administration | Active Directory | Security | Backup & Recovery
 
-**Windows Server 2025 · Active Directory · DNS · DHCP · Group Policy · PowerShell · Oracle VirtualBox**
+**Windows Server 2025 · Windows 11 · Active Directory · DNS · DHCP · Group Policy · PowerShell · VirtualBox**
 
-A hands-on enterprise infrastructure lab focused on maintaining secure, reliable, and recoverable Windows environments.
+A hands-on Windows infrastructure project focused on troubleshooting, system reliability, security configuration, and recovery testing.
 
-**Project Type:** Independent Technical Lab  
-**Environment:** Isolated Virtual Enterprise Network  
-**Status:** Core Implementation & Validation Complete  
+**Project Type:** Independent Home Lab  
+**Environment:** Isolated Virtual Network  
+**Status:** Core Technical Lab Completed  
 **Completed:** November 2026
 
 ---
 
 </div>
 
-## 01 | Executive Summary
+## About This Project
 
-This project simulates the administration and operational maintenance of a small enterprise Windows infrastructure.
+I built this project to gain practical experience with the kinds of infrastructure issues that IT Support Technicians and Systems Administrators encounter.
 
-Using Windows Server 2025, Windows 11, and Oracle VirtualBox, I built upon an Active Directory environment to perform infrastructure health assessments, troubleshoot network services, implement security controls, and validate backup and recovery procedures.
+I used an existing Windows Server and Active Directory lab as the starting point, then created isolated virtual machine copies to investigate domain connectivity, check essential Windows services, review security settings, and perform backup and recovery testing.
 
-The primary goal was to move beyond theoretical IT concepts and demonstrate practical skills in maintaining business-critical infrastructure.
+I followed technical guidance and used PowerShell throughout the project, but I also worked through actual configuration checks, investigated unexpected results, and verified whether the changes worked.
 
-### Key Outcomes
+My main goal was to understand not just which commands to run, but why they are useful and how to interpret the results.
 
-| Area | Verified Outcome |
+### What I Accomplished
+
+| Area | Result |
 |---|---|
-| Active Directory | Domain controller health tests passed |
-| Network Services | DNS, DHCP, and domain connectivity validated |
-| Security | Domain password policy hardened |
-| Group Policy | Workstation auto-lock policy verified |
-| Backup | System State and file-level backups completed |
-| Disaster Recovery | Test file successfully recovered |
-| Data Integrity | Original and restored SHA-256 hashes matched |
-| System Health | Five critical infrastructure services running |
-| Patch Assessment | Installed updates reviewed; external access limitation documented |
+| Active Directory | Verified domain controller health and connectivity |
+| DNS & DHCP | Investigated network services and client addressing |
+| Group Policy | Verified workstation policy application |
+| Security | Strengthened the domain password policy |
+| Backup | Completed Windows Server System State and file backups |
+| Recovery | Successfully restored a test file |
+| Integrity | Confirmed matching SHA-256 file hashes |
+| Monitoring | Verified critical Windows infrastructure services |
+| Patch Assessment | Investigated Windows Update connectivity limitations |
 
-> **Project highlight:** Successfully recovered a file from Windows Server Backup to an alternate location and verified its integrity using SHA-256 hashing, with zero reported recovery failures.
+**Main achievement:** Successfully restored a backed-up file to a separate directory and confirmed that the recovered data was identical to the original using SHA-256 hashing.
 
 ---
 
-## 02 | Infrastructure Architecture
+## 01 | Lab Architecture
 
-### Logical Network Topology
+### Network Topology
 
 ```mermaid
 flowchart TB
     HOST["Windows Host Computer<br/>Oracle VirtualBox"]
 
-    subgraph LAB["Isolated Internal Network — AC-INFRA"]
-        DC["Windows Server 2025<br/>AC-INFRA-DC01<br/>Hostname: AC-LAB-DC01<br/>192.168.50.10"]
-        PC["Windows 11 Workstation<br/>AC-INFRA-PC01<br/>DHCP Client"]
-        DC <-->|"DNS / DHCP / AD Authentication / GPO"| PC
+    subgraph LAB["Isolated VirtualBox Network"]
+        DC["Windows Server 2025<br/>VM: AC-INFRA-DC01<br/>Hostname: AC-LAB-DC01<br/>192.168.50.10"]
+        PC["Windows 11 Client<br/>AC-INFRA-PC01"]
+
+        DC <-->|"DNS / DHCP / AD / Group Policy"| PC
     end
 
-    BACKUP[("Dedicated Virtual Disk<br/>60 GB / E:<br/>AC-INFRA-BACKUP")]
+    BACKUP[("60 GB Backup Disk<br/>E: AC-INFRA-BACKUP")]
 
     HOST --> LAB
-    DC -->|"System State & File Backup"| BACKUP
+    DC -->|"Windows Server Backup"| BACKUP
 ```
 
-### Environment Configuration
+### Environment Details
 
-| Component | Implementation |
+| Component | Configuration |
 |---|---|
-| Virtualization Platform | Oracle VirtualBox |
-| Server Operating System | Windows Server 2025 Standard Evaluation |
-| Workstation Operating System | Windows 11 |
+| Virtualization | Oracle VirtualBox |
+| Server OS | Windows Server 2025 Standard Evaluation |
+| Client OS | Windows 11 |
 | Active Directory Domain | `corp.aclab.test` |
-| Domain Controller | `AC-LAB-DC01` |
-| Server VM | `AC-INFRA-DC01` |
-| Client VM | `AC-INFRA-PC01` |
-| Domain Controller Address | `192.168.50.10` |
-| Network Configuration | Isolated VirtualBox internal network |
-| Backup Destination | `E:\` |
+| Domain Controller Hostname | `AC-LAB-DC01` |
+| Server VM Name | `AC-INFRA-DC01` |
+| Client VM Name | `AC-INFRA-PC01` |
+| Server IP Address | `192.168.50.10` |
+| Network | Isolated VirtualBox network |
 | Backup Disk | 60 GB virtual disk |
-| Automation / Administration | Windows PowerShell |
+| Backup Destination | `E:\` |
+| Administration Tools | PowerShell, DCDIAG, Windows Server Backup |
 
-**Design rationale:** An isolated virtual network was used to practice enterprise infrastructure administration while minimizing exposure to external networks.
+### Why I Used an Isolated Network
 
----
+I wanted to experiment with Active Directory, DHCP, DNS, and security settings without affecting my main laptop or other devices.
 
-## 03 | Project Scope & Responsibilities
+I used separate virtual machines so I could test infrastructure configurations and troubleshoot issues in a controlled environment.
 
-The lab covers six core infrastructure workstreams.
-
-| Workstream | Responsibilities |
-|---|---|
-| Identity & Access | Active Directory verification and privileged account review |
-| Networking | DNS, DHCP, domain discovery, and connectivity troubleshooting |
-| Endpoint Security | Password policies, Group Policy, and workstation controls |
-| System Reliability | Service health, event review, and Windows patch assessment |
-| Backup Operations | Backup storage provisioning and backup version verification |
-| Disaster Recovery | Alternate-location file restore and integrity verification |
+The isolated setup also introduced limitations, particularly when checking external services such as Windows Update.
 
 ---
 
-## 04 | Implementation & Technical Validation
+## 02 | Active Directory & Domain Health
 
-### 4.1 Active Directory & Domain Controller Health
+One of my first priorities was checking whether the cloned domain controller and Windows client were communicating correctly.
 
-Validated the existing Active Directory environment using native Windows administration tools.
+I verified the domain information, domain controller discovery, and the client computer's connection to Active Directory.
 
-**Technical checks performed:**
-
-- Identified domain controller and Active Directory domain information.
-- Verified domain controller discovery from the Windows 11 workstation.
-- Checked domain secure-channel health.
-- Executed domain controller diagnostic tests.
-- Reviewed privileged Active Directory group membership.
-
-**Selected commands:**
+### Tools and Commands
 
 ```powershell
 Get-ADDomain
@@ -127,89 +113,152 @@ nltest /dsgetdc:corp.aclab.test
 Test-ComputerSecureChannel -Verbose
 ```
 
-**Verified outcome:** Connectivity, Advertising, and Services diagnostics passed. The Windows 11 workstation's domain secure channel was confirmed healthy.
+### What I Checked
+
+- Active Directory domain information
+- Domain controller discovery
+- DNS-related domain connectivity
+- Workstation secure-channel status
+- Domain controller service health
+
+### Result
+
+The selected DCDIAG tests for Connectivity, Advertising, and Services passed.
+
+The workstation's domain secure channel was also verified.
+
+### What I Learned
+
+A computer being connected to a network does not automatically mean it can communicate correctly with Active Directory.
+
+DNS configuration, domain controller discovery, authentication, and network connectivity all need to work together.
+
+**Evidence:**
+
+[Domain controller health verification](Screenshots/62-final-infrastructure-health-check.png)
 
 ---
 
-### 4.2 DNS, DHCP & Network Troubleshooting
+## 03 | Troubleshooting Case Study: DHCP & Network Connectivity
 
-Investigated network configuration and service dependencies across the server and workstation.
+### The Situation
 
-**Activities included:**
+During the network validation stage, I investigated DHCP address assignment and connectivity between the Windows 11 client and the domain controller.
 
-- Verifying DNS resolution and service discovery records.
-- Testing communication with the domain controller.
-- Checking DHCP server authorization.
-- Reviewing DHCP scope configuration and available addresses.
-- Validating DHCP lease acquisition on the Windows 11 workstation.
+The lab included checks for DHCP service availability, address allocation, and client-to-server communication.
 
-**Selected commands:**
+### My Troubleshooting Process
+
+I used PowerShell to review network configuration and validate how the Windows client was communicating with the server.
 
 ```powershell
 ipconfig /all
-
-Resolve-DnsName AC-LAB-DC01.corp.aclab.test
-
-Test-NetConnection 192.168.50.10 -Port 53
 
 Get-DhcpServerInDC
 
 Get-DhcpServerv4Scope
 
 Get-DhcpServerv4ScopeStatistics
+
+Test-NetConnection 192.168.50.10 -Port 53
 ```
 
-**Verified outcome:** The workstation acquired an address from the configured DHCP scope, and network connectivity to the domain controller was established.
+I reviewed:
+
+1. Whether the DHCP service was available.
+2. Whether the DHCP scope was configured.
+3. Whether the client received an appropriate IP address.
+4. Whether the client could communicate with the server.
+5. Whether DNS resolution was working.
+
+### Result
+
+I verified DHCP address assignment and established client-to-server connectivity in the lab.
+
+### What I Learned
+
+When a workstation has a network issue, I should not immediately assume the problem is with the server.
+
+I need to inspect the client's IP configuration, DHCP availability, DNS settings, and the underlying network connection.
+
+This helped me understand how to approach network troubleshooting in a more systematic way.
+
+### Evidence
+
+[DHCP investigation](Screenshots/13-dhcp-incident-investigation.png)
+
+[Client IP address assignment](Screenshots/18-client-dhcp-address-assignment.png)
+
+[Client-server connectivity test](Screenshots/20-client-server-connectivity-validation.png)
 
 ---
 
-### 4.3 Security Hardening & Access Controls
+## 04 | Security Hardening & Access Management
 
-Reviewed privileged accounts and strengthened the domain's default password policy.
+After checking the infrastructure, I reviewed security settings on the domain controller.
 
-#### Password Policy Configuration
+This included privileged account membership and the domain's password and account lockout policies.
 
-| Security Control | Configured Value |
+### Password Policy Changes
+
+| Security Setting | Configured Value |
 |---|---|
 | Minimum Password Length | 14 characters |
 | Password History | 12 passwords |
 | Password Complexity | Enabled |
 | Minimum Password Age | 1 day |
-| Account Lockout Threshold | 10 attempts |
+| Account Lockout Threshold | 10 failed attempts |
 | Lockout Duration | 15 minutes |
 | Lockout Observation Window | 15 minutes |
 
-**Verification:**
+### Policy Verification
 
 ```powershell
 Get-ADDefaultDomainPasswordPolicy |
 Select-Object MinPasswordLength,
 PasswordHistoryCount,
 ComplexityEnabled,
+MinPasswordAge,
 LockoutThreshold,
-LockoutDuration
+LockoutDuration,
+LockoutObservationWindow
 ```
 
-Reviewed membership of the Domain Admins group and inspected the built-in Administrator account configuration.
+### My Approach
 
-**Verified outcome:** Updated password policy settings were successfully applied and retrieved for validation.
+Before changing the password policy, I reviewed the existing configuration and created a VirtualBox snapshot.
 
-**Scope note:** Configuration verification was completed; full authentication and lockout behavior testing was not performed.
+After applying the new settings, I ran verification commands to confirm the updated configuration.
+
+I also documented the change in a local security change record.
+
+### Result
+
+The updated password policy values were verified successfully.
+
+**Limitation:** I verified the policy configuration, but did not perform a complete test of every password rejection and account lockout scenario.
+
+### What I Learned
+
+Security changes should be documented and verified rather than assumed to be successful.
+
+I also learned why administrators should establish a recovery point before making significant infrastructure changes.
+
+### Evidence
+
+[Password policy verification](Screenshots/34-password-policy-hardening-verification.png)
+
+[Security change record](Screenshots/36-security-change-record.png)
 
 ---
 
-### 4.4 Group Policy & Workstation Management
+## 05 | Group Policy & Workstation Security
 
-Validated the application of domain Group Policy on the Windows 11 workstation.
+I reviewed the Group Policies applied to the Windows 11 workstation.
 
-**Activities:**
+One of the checks involved confirming a workstation inactivity timeout of 600 seconds.
 
-- Confirmed domain computer policy processing.
-- Verified the applied workstation auto-lock Group Policy.
-- Checked the configured inactivity timeout.
-- Reviewed results from an elevated PowerShell session.
-
-**Selected commands:**
+### Commands Used
 
 ```powershell
 gpresult /r /scope computer
@@ -219,29 +268,53 @@ Get-ItemProperty `
 -Name InactivityTimeoutSecs
 ```
 
-**Verified outcome:** The `GPO-Workstation_AutoLock` policy appeared in the applied Group Policy results, with an inactivity timeout of 600 seconds.
+### Result
+
+The workstation auto-lock policy appeared in the applied Group Policy results.
+
+The configured inactivity timeout was 600 seconds.
+
+### What I Learned
+
+A configured Group Policy and an applied Group Policy are not necessarily the same thing.
+
+Using `gpresult` and checking relevant Windows settings helped me verify the effective workstation configuration.
+
+**Evidence:**
+
+[Workstation auto-lock policy](Screenshots/27-workstation-auto-lock-policy.png)
 
 ---
 
-## 05 | Backup & Disaster Recovery
+## 06 | Backup & Recovery Implementation
 
-### 5.1 Backup Storage Provisioning
+This was one of the most important parts of the project for me.
 
-Provisioned an additional 60 GB virtual hard disk and configured it as a dedicated NTFS backup volume.
+I wanted to learn how to create a backup, identify available recovery points, recover a file, and verify that the restored data was correct.
 
-| Property | Configuration |
+### 6.1 Dedicated Backup Storage
+
+I added a separate 60 GB virtual disk to the Windows Server VM.
+
+I initialized the disk, configured an NTFS volume, and assigned it the drive letter `E:`.
+
+| Property | Value |
 |---|---|
+| Capacity | 60 GB |
 | Drive Letter | `E:` |
-| Volume Label | `AC-INFRA-BACKUP` |
+| Label | `AC-INFRA-BACKUP` |
 | File System | NTFS |
-| Capacity | Approximately 60 GB |
 | Backup Tool | Windows Server Backup |
 
-### 5.2 System State Backup
+**Evidence:**
 
-Installed the Windows Server Backup feature and performed a System State backup of the domain controller.
+[Backup volume configuration](Screenshots/45-backup-volume-verification.png)
 
-**Backup verification:**
+### 6.2 System State Backup
+
+I installed the Windows Server Backup feature and completed a System State backup.
+
+I then checked the backup catalog to verify that a recovery point existed.
 
 ```powershell
 wbadmin get versions -backupTarget:E:
@@ -251,90 +324,125 @@ wbadmin get items `
 -backupTarget:E:
 ```
 
-**Result:** Backup completed successfully and the catalog listed System State and related recoverable components.
+**Result:** The System State backup completed successfully, and recoverable components were listed.
 
 **Recovery point:** `11/25/2026-17:25`
 
-### 5.3 Controlled File-Level Backup
+### Evidence
 
-Prepared a noncritical test document in a dedicated recovery-testing directory.
+[Successful System State backup](Screenshots/49-system-state-backup-completed.png)
 
-**Source file:**
+[Backup version verification](Screenshots/50-system-state-backup-version-verification.png)
 
-`C:\AC-Recovery-Test\AC-SEC-001-Password-Policy-Change.txt`
+---
 
-Created a separate backup using Windows Server Backup and verified its presence in the recovery catalog.
+## 07 | Troubleshooting Case Study: File Backup & Recovery
 
-**File backup recovery point:** `11/25/2026-19:02`
+### The Objective
 
-### 5.4 File Restoration
+Creating a backup does not prove that the data can be recovered.
 
-Recovered the test document to an alternate directory to avoid overwriting the source file.
+I wanted to test an actual restoration process without overwriting important system files.
 
-**Recovery destination:**
+### My Approach
 
-`C:\AC-Restored-Files`
+I prepared a small test document:
 
-**Verified results:**
+```text
+C:\AC-Recovery-Test\
+AC-SEC-001-Password-Policy-Change.txt
+```
 
-| Recovery Metric | Result |
+I created a separate file-level backup using Windows Server Backup.
+
+After verifying the backup recovery point, I restored the file to another location.
+
+### Recovery Destination
+
+```text
+C:\AC-Restored-Files\
+```
+
+### Recovery Results
+
+| Metric | Verified Result |
 |---|---|
-| Files Recovered | 1 |
+| Files Restored | 1 |
 | Data Restored | 974 bytes |
 | Failed Files | 0 |
-| Recovery Operation | Successful |
+| Recovery Status | Successful |
 | Original File | Preserved |
 
-### 5.5 SHA-256 Integrity Validation
+### Integrity Verification
 
-Calculated SHA-256 hashes for the original and recovered files using PowerShell.
+I used SHA-256 hashing to compare the original and restored files.
 
 ```powershell
 $original = "C:\AC-Recovery-Test\AC-SEC-001-Password-Policy-Change.txt"
 
 $restored = "C:\AC-Restored-Files\AC-SEC-001-Password-Policy-Change.txt"
 
-(Get-FileHash $original -Algorithm SHA256).Hash
+$originalHash = (Get-FileHash $original -Algorithm SHA256).Hash
 
-(Get-FileHash $restored -Algorithm SHA256).Hash
+$restoredHash = (Get-FileHash $restored -Algorithm SHA256).Hash
+
+$originalHash -eq $restoredHash
 ```
 
-**Validation result:**
+### Result
 
 ```text
-Original and Restored SHA-256: IDENTICAL
+Files Restored: 1
+Recovery Failures: 0
 Hashes Match: True
-Recovery Integrity: PASS
 ```
 
-This demonstrates that the restored file was identical in content to the original test file.
+The matching hashes confirmed that the recovered file had the same content as the original file.
 
-> **Recovery scope:** File-level restoration was tested successfully. A full Active Directory or domain controller recovery was not attempted, avoiding unnecessary risk to the functioning lab environment.
+### What I Learned
+
+I learned why backup verification should include more than checking for a successful backup message.
+
+Restoring data and confirming its integrity provide stronger evidence that a backup is useful.
+
+I also learned why restoring a file to a separate directory is safer during recovery testing.
+
+### Evidence
+
+[File recovery completed](Screenshots/60-file-recovery-completed.png)
+
+[SHA-256 integrity verified](Screenshots/61-file-recovery-integrity-verified.png)
+
+### Recovery Test Scope
+
+A file-level restoration was completed successfully.
+
+The System State backup was created and verified in the backup catalog, but a full Active Directory or domain controller recovery was not performed.
 
 ---
 
-## 06 | Infrastructure Monitoring & Health Audit
+## 08 | Final Infrastructure Health Verification
 
-Performed final checks to confirm that critical infrastructure services remained operational following configuration changes, backup, and recovery testing.
+After the backup and recovery testing, I performed another health check to confirm that essential domain controller services remained operational.
 
-### Critical Services
+### Services Checked
 
-| Service | State | Startup Type |
+| Service | Status | Startup Type |
 |---|---|---|
-| Active Directory Domain Services | Running | Automatic |
+| Active Directory (NTDS) | Running | Automatic |
 | DNS Server | Running | Automatic |
 | DHCP Server | Running | Automatic |
 | Netlogon | Running | Automatic |
 | Windows Time | Running | Automatic |
 
-**Verification command:**
+### Verification
 
 ```powershell
 Get-Service NTDS,DNS,DHCPServer,Netlogon,W32Time |
 Format-Table Name,Status,StartType -AutoSize
 ```
 
-### Domain Controller Diagnostics
+I also ran selected DCDIAG tests.
 
 | Test | Result |
 |---|---|
@@ -342,132 +450,169 @@ Format-Table Name,Status,StartType -AutoSize
 | Advertising | PASS |
 | Services | PASS |
 
-The selected Active Directory diagnostic tests completed successfully.
+These results confirmed that the selected critical services and diagnostic tests were healthy at the time of checking.
+
+**Evidence:**
+
+[Final critical services audit](Screenshots/63-final-critical-services-audit.png)
 
 ---
 
-## 07 | Windows Update & Patch Assessment
+## 09 | Troubleshooting Case Study: Windows Update Connectivity
 
-Reviewed installed updates and system configuration using native Windows Server tools.
+### The Problem
 
-**Operating System:** Windows Server 2025 Standard Evaluation  
-**OS Build:** 26100
+During the final maintenance audit, I reviewed the Windows Server update history and attempted to check connectivity to Microsoft's update infrastructure.
 
-### Assessment Findings
+External DNS resolution for `download.windowsupdate.com` failed.
 
-- Recorded installed Windows security updates.
-- Inspected Windows Update service configuration.
-- Checked common registry indicators for a pending reboot.
-- Verified that both checked reboot indicators were absent.
-- Tested external DNS and HTTPS connectivity to Windows Update infrastructure.
+### Investigation
 
-**Observed limitation:** The domain controller was connected to an isolated VirtualBox internal network without an external gateway. External Windows Update DNS resolution and HTTPS connectivity were unsuccessful.
+I checked the server's network configuration and attempted to test HTTPS connectivity.
 
-**Assessment:** Windows patch compliance remains unverified because an online update scan was not completed.
+```powershell
+Get-NetIPConfiguration
 
-This limitation is documented as an environment constraint rather than a successful patch-compliance result.
+Resolve-DnsName download.windowsupdate.com
+
+Test-NetConnection download.windowsupdate.com -Port 443
+```
+
+### Findings
+
+The server had the following network configuration:
+
+```text
+IPv4 Address: 192.168.50.10
+Default Gateway: Not Configured
+External DNS Resolution: Failed
+HTTPS Connectivity: Failed
+```
+
+### My Decision
+
+I kept the server on its isolated VirtualBox network rather than changing the network configuration simply to reach Windows Update.
+
+I documented that a complete online patch assessment could not be performed.
+
+### What I Learned
+
+A DNS resolution failure does not always mean that the DNS service is broken.
+
+The issue may involve network isolation, missing routes, or a default gateway.
+
+This investigation helped me connect basic networking concepts with real troubleshooting.
+
+### Evidence
+
+[Windows Update connectivity investigation](Screenshots/66-windows-update-connectivity-check.png)
+
+**Limitation:** Patch compliance remains unverified. No online Windows Update scan was completed.
 
 ---
 
-## 08 | Evidence & Screenshots
+## 10 | Featured Project Evidence
 
-The `Screenshots/` folder contains numbered technical evidence documenting configuration, troubleshooting, validation, and recovery activities.
+I captured 67 screenshots throughout the project to document the steps I performed and their results.
 
-### Selected Evidence
+Rather than presenting every screenshot individually in the README, I selected the most useful evidence below.
 
-| Evidence | Screenshot |
+| Area | Evidence |
 |---|---|
-| System State Backup Completion | [View](Screenshots/49-system-state-backup-completed.png) |
-| Backup Version Verification | [View](Screenshots/50-system-state-backup-version-verification.png) |
-| Backup Storage Verification | [View](Screenshots/51-backup-storage-integrity-check.png) |
-| Recoverable Components | [View](Screenshots/52-backup-recoverable-items-review.png) |
-| File Recovery Completion | [View](Screenshots/60-file-recovery-completed.png) |
-| SHA-256 Integrity Verification | [View](Screenshots/61-file-recovery-integrity-verified.png) |
-| Domain Controller Health | [View](Screenshots/62-final-infrastructure-health-check.png) |
-| Critical Services Audit | [View](Screenshots/63-final-critical-services-audit.png) |
-| Windows Patch Review | [View](Screenshots/64-windows-server-patch-audit.png) |
-| Windows Update Connectivity | [View](Screenshots/66-windows-update-connectivity-check.png) |
+| DHCP Troubleshooting | [Investigation](Screenshots/13-dhcp-incident-investigation.png) |
+| Client Connectivity | [Connectivity Test](Screenshots/20-client-server-connectivity-validation.png) |
+| Group Policy | [Workstation Auto-Lock](Screenshots/27-workstation-auto-lock-policy.png) |
+| Password Hardening | [Policy Verification](Screenshots/34-password-policy-hardening-verification.png) |
+| Backup Preparation | [Backup Volume](Screenshots/45-backup-volume-verification.png) |
+| System State Backup | [Completed Backup](Screenshots/49-system-state-backup-completed.png) |
+| Recovery | [Successful Restoration](Screenshots/60-file-recovery-completed.png) |
+| Integrity Verification | [SHA-256 Hash Match](Screenshots/61-file-recovery-integrity-verified.png) |
+| Infrastructure Health | [Critical Services](Screenshots/63-final-critical-services-audit.png) |
+| Network Limitation | [Windows Update Investigation](Screenshots/66-windows-update-connectivity-check.png) |
 
-### Recovery Evidence — Visual Preview
+### Recovery Test — Visual Evidence
 
 **Successful file restoration**
 
-![Windows Server file restoration evidence](Screenshots/60-file-recovery-completed.png)
+![Successful Windows Server file restoration](Screenshots/60-file-recovery-completed.png)
 
 **SHA-256 integrity verification**
 
-![SHA-256 hash comparison showing successful recovery](Screenshots/61-file-recovery-integrity-verified.png)
+![Original and restored file hashes matched](Screenshots/61-file-recovery-integrity-verified.png)
+
+All additional evidence is available in the [Screenshots directory](Screenshots/).
 
 ---
 
-## 09 | Challenges & Lessons Learned
+## 11 | Key Lessons Learned
 
-### Virtual Disk Provisioning
+This project helped me better understand how different parts of a Windows infrastructure depend on each other.
 
-Configured a separate virtual disk as an NTFS backup destination and verified the volume was accessible to Windows Server Backup.
+My biggest takeaways were:
 
-### Backup Operation & Validation
+**Troubleshooting requires a process.** Checking IP settings, DNS, DHCP, and connectivity in a logical order is more useful than changing settings without knowing the cause.
 
-Managed backup discovery, monitored system writers, reviewed backup status, and verified recovery points using `wbadmin`.
+**Verification matters.** I learned to confirm security changes, Group Policy application, backup completion, and recovery results instead of assuming they worked.
 
-### Recovery Integrity
+**Backups should be tested.** A backup job reporting success is only one part of a recovery plan. Restoring data and verifying its integrity provides stronger evidence.
 
-Demonstrated that completing a backup is only one part of data protection. A successful recovery operation and integrity verification provide stronger evidence of recoverability.
+**Network design affects troubleshooting.** My Windows Update investigation showed how an isolated network can prevent external services from being reached even when internal services are operating normally.
 
-### Isolated Network Limitations
-
-Identified the relationship between internal networking, DNS resolution, default gateways, and external update availability.
-
-### Operational Documentation
-
-Captured numbered screenshots and recorded command outputs to create an auditable technical record of the laboratory work.
+**Documentation is part of IT work.** Recording commands, results, configuration changes, and recovery procedures makes troubleshooting easier to explain and repeat.
 
 ---
 
-## 10 | Technical Skills Demonstrated
+## 12 | Technical Skills Demonstrated
 
-**Infrastructure:** Windows Server 2025, Active Directory Domain Services, DNS, DHCP, Group Policy
-
-**Administration:** PowerShell, Windows Server Backup, VirtualBox, Windows 11
-
-**Security:** Privileged Account Review, Password Policy Hardening, Endpoint Security Controls
-
-**Reliability:** Infrastructure Diagnostics, Event Log Review, Backup Validation, File Recovery, SHA-256 Integrity Testing
-
-**IT Support:** Root-Cause Investigation, Troubleshooting, Technical Documentation, Verification Procedures
-
----
-
-## 11 | Future Improvements
-
-Potential extensions to the laboratory include:
-
-- Testing domain controller disaster recovery using an isolated clone.
-- Configuring scheduled backup jobs and retention monitoring.
-- Implementing centralized event collection and alerting.
-- Evaluating a controlled patch-management workflow.
-- Expanding infrastructure health reporting through PowerShell automation.
-
-These enhancements are not claimed as completed work.
+| Category | Skills |
+|---|---|
+| Windows Infrastructure | Windows Server 2025, Active Directory, DNS, DHCP |
+| Endpoint Administration | Windows 11, Group Policy, Workstation Security |
+| PowerShell | System Diagnostics, Service Checks, Configuration Verification |
+| Identity & Security | Privileged Account Review, Password Policy Hardening |
+| Backup & Recovery | Windows Server Backup, System State Backup, File Recovery |
+| Reliability | Domain Controller Diagnostics, Service Monitoring, Recovery Testing |
+| Troubleshooting | Network Investigation, Root-Cause Analysis, Technical Documentation |
+| Virtualization | Oracle VirtualBox, VM Cloning, Snapshots, Virtual Storage |
 
 ---
 
-## Project Disclaimer
+## 13 | Future Improvements
 
-This repository documents an independent hands-on learning environment built using evaluation software and virtual machines.
+This project provided a foundation for further infrastructure work.
 
-All systems, network addresses, and configurations belong to a simulated laboratory.
+My next areas for improvement include:
 
-The project is intended to demonstrate practical technical skills and does not represent production deployment, formal security certification, or a fully tested enterprise disaster-recovery solution.
+- Testing Active Directory recovery in a separate, controlled environment.
+- Automating routine infrastructure health checks using PowerShell.
+- Configuring scheduled backup jobs and monitoring.
+- Building a centralized event-monitoring solution.
+- Exploring patch management in an appropriately connected test environment.
+
+These are future learning goals, not completed implementations.
+
+---
+
+## Project Scope & Disclaimer
+
+This repository documents a self-directed, guided home lab using Windows Server evaluation software and virtual machines.
+
+It is not a production deployment or a formal security audit.
+
+The project demonstrates practical configuration, troubleshooting, security verification, backup creation, and file recovery.
+
+A complete domain controller disaster-recovery exercise and full Windows patch-compliance assessment were outside the scope of the completed tests.
 
 ---
 
 <div align="center">
 
-**Designed, implemented, tested, and documented by Ashish Chauhan**
+### Ashish Chauhan
 
-*IT Support | Windows Infrastructure | System Reliability*
+**IT Support | Windows Infrastructure | Troubleshooting & System Reliability**
 
 [LinkedIn](https://www.linkedin.com/in/ashish-chauhan-b518252a6/)
+
+*Built to develop practical IT infrastructure skills through hands-on learning, troubleshooting, and verification.*
 
 </div>
